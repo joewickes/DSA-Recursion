@@ -172,75 +172,7 @@ function getFactorial(n) {
 console.log('getFactorial(5)', getFactorial(5)); 
 
 
-// Problem 8
-// What is the input to the program?
-  // 0, 0
-// What is the output of the program?
-  // Directions to the exit
-// What is the input to each recursive call?
-  // A new column or row
-// What is the output of each recursive call?
-  // A string denoting the movement
-
-getThroughMaze = (column, row) => {
-
-  const mySmallMaze = [
-    [' ', ' ', ' '],
-    [' ', '*', ' '],
-    [' ', ' ', 'e']
-  ];
-  
-  const bigMaze = [
-    [' ', ' ', ' ', '*', ' ', ' ', ' '],
-    ['*', '*', ' ', '*', ' ', '*', ' '],
-    [' ', ' ', ' ', ' ', ' ', ' ', ' '],
-    [' ', '*', '*', '*', '*', '*', ' '],
-    [' ', ' ', ' ', ' ', ' ', ' ', 'e']
-  ];
-
-  const maze = bigMaze;
-
-  // Base case
-  if (maze[column][row] === 'e') {
-    console.log('End')
-    return 'End';
-
-    // If R is open
-  } else if ((maze[column][row] === ' ') &&  ((maze[column][(row + 1)]) === ' ' || maze[column][(row + 1)] === 'e')) {
-    console.log('R')
-    maze[column][row] = null;
-    const gtm = getThroughMaze(column, (row + 1))
-    return 'R ' + gtm
-    
-    // If D is open
-  } else if ((maze[column][row] === ' ') &&  ((maze[(column + 1)][row]) === ' ' || maze[(column + 1)][row] === 'e')) {
-    console.log('D')
-    maze[column][row] = null;
-    const gtm = getThroughMaze((column + 1), row)
-    return 'D ' + gtm
-
-    // If L is open
-  } else if ((maze[column][row] === ' ') &&  ((maze[column][(row - 1)]) === ' ' || maze[column][(row - 1)] === 'e')) {
-    console.log('L')
-    maze[column][row] = null;
-    const gtm = getThroughMaze(column, (row - 1))
-    return 'L ' + gtm
-
-    // If U is open
-  } else if ((maze[column][row] === ' ') &&  ((maze[(column - 1)][row]) === ' ' || maze[(column - 1)][row] === 'e')) {
-    console.log('U')
-    maze[column][row] = null;
-    const gtm = getThroughMaze((column - 1), row)
-    return 'U ' + gtm
-  }
-}
-
-
-
-console.log('getThroughMaze(0, 0)', getThroughMaze(0, 0));
-
-
-// Problem 9 (ASK)
+// Problem 8 & 9 (ASK)
 // What is the input to the program?
   // 0, 0
 // What is the output of the program?
@@ -250,7 +182,6 @@ console.log('getThroughMaze(0, 0)', getThroughMaze(0, 0));
 // What is the output of each recursive call?
   // A string denoting the movement
 
-getThroughMaze = (column, row) => {
   const mySmallMaze = [
     [' ', ' ', ' '],
     [' ', '*', ' '],
@@ -265,42 +196,210 @@ getThroughMaze = (column, row) => {
     [' ', ' ', ' ', ' ', ' ', ' ', 'e']
   ];
 
+  let currentPathNum = 0;
+  let totalPathNum = 0;
+  const routes = [[]];
+
+getThroughMaze = (column, row) => {
+
   const maze = bigMaze;
 
-  // Base case
-  if (maze[column][row] === 'e') {
-    console.log('End')
-    return 'End';
+  const currentSpace = maze[column][row];
+  const changeCurrentSpaceToOne = () => maze[column][row] = '1';
 
-    // If R is open
-  } else if ((maze[column][row] === ' ') &&  ((maze[column][(row + 1)]) === ' ' || maze[column][(row + 1)] === 'e')) {
-    console.log('R')
-    maze[column][row] = '1';
-    const gtm = getThroughMaze(column, (row + 1))
-    return 'R ' + gtm
-    
-    // If D is open
-  } else if ((maze[column][row] === ' ') &&  ((maze[(column + 1)][row]) === ' ' || maze[(column + 1)][row] === 'e')) {
-    console.log('D')
-    maze[column][row] = '1';
-    const gtm = getThroughMaze((column + 1), row)
-    return 'D ' + gtm
+  const nextRowRight = row + 1;
+  const nextColumnDown = column + 1;
+  const nextRowLeft = row - 1;
+  const nextColumnUp = column - 1;
 
-    // If L is open
-  } else if ((maze[column][row] === ' ') &&  ((maze[column][(row - 1)]) === ' ' || maze[column][(row - 1)] === 'e')) {
-    console.log('L')
-    maze[column][row] = '1';
-    const gtm = getThroughMaze(column, (row - 1))
-    return 'L ' + gtm
+  const onESpace = currentSpace === 'e';
+  const onBlankSpace = currentSpace === ' ';
+  const onUsedSpace = currentSpace === '1';
 
-    // If U is open
-  } else if ((maze[column][row] === ' ') &&  ((maze[(column - 1)][row]) === ' ' || maze[(column - 1)][row] === 'e')) {
-    console.log('U')
-    maze[column][row] = '1';
-    const gtm = getThroughMaze((column - 1), row)
-    return 'U ' + gtm
+  // Check next spaces for 'e'
+  const checkIfRightIsE = () => {
+    if (maze[column][nextRowRight] !== undefined) {
+      return !!(maze[column][nextRowRight] === 'e');
+    }
+  }
+  const checkIfDownIsE = () => {
+    if (maze[nextColumnDown] !== undefined) {
+      return !!(maze[nextColumnDown][row] === 'e');
+    }
+  }
+  const checkIfLeftIsE = () => {
+    if (maze[column][nextRowLeft] !== undefined) {
+      return !!(maze[column][nextRowLeft] === 'e');
+    }
+  }
+  const checkIfUpIsE = () => {
+    if (maze[nextColumnUp] !== undefined) {
+      return !!(maze[nextColumnUp][row] === 'e');
+    }
+  }
+
+  // check next spaces for open
+  const checkIfRightIsOpen = () => {
+    if (maze[column][nextRowRight] !== undefined) {
+      return !!(maze[column][nextRowRight] === ' ');
+    }
+  }
+  const checkIfDownIsOpen = () => {
+    if (maze[nextColumnDown] !== undefined) {
+      return !!(maze[nextColumnDown][row] === ' ');
+    }
+  }
+  const checkIfLeftIsOpen = () => {
+    if (maze[column][nextRowLeft] !== undefined) {
+      return !!(maze[column][nextRowLeft] === ' ');
+    }
+  }
+  const checkIfUpIsOpen = () => {
+    if (maze[nextColumnUp] !== undefined) {
+      return !!(maze[nextColumnUp][row] === ' ');
+    }
+  }
+
+  // check each spaces for used
+  const checkIfRightIsUsed = () => {
+    if (maze[column][nextRowRight] !== undefined) {
+      return !!(maze[column][nextRowRight] === '1');
+    }
+  }
+  const checkIfDownIsUsed = () => {
+    if (maze[nextColumnDown] !== undefined) {
+      return !!(maze[nextColumnDown][row] === '1');
+    }
+  }
+  const checkIfLeftIsUsed = () => {
+    if (maze[column][nextRowLeft] !== undefined) {
+      return !!(maze[column][nextRowLeft] === '1');
+    }
+  }
+  const checkIfUpIsUsed = () => {
+    if (maze[nextColumnUp] !== undefined) {
+      return !!(maze[nextColumnUp][row] === '1');
+    }
+  }
+
+  // check all paths for e at once
+  const checkAllPathsForE = () => {
+    const ePaths = [];
+
+    if (checkIfRightIsE()) {
+      ePaths.push('R');
+    }
+    if (checkIfDownIsE()) {
+      ePaths.push('D');
+    }
+    if (checkIfLeftIsE()) {
+      ePaths.push('L');
+    }
+    if (checkIfUpIsE()) {
+      ePaths.push('U');
+    }
+
+    return ePaths;
+  }
+
+  // check all paths for open at once
+  const checkAllPathsForOpen = () => {
+    const openPaths = [];
+
+    if (checkIfRightIsOpen()) {
+      openPaths.push('R');
+    }
+    if (checkIfDownIsOpen()) {
+      openPaths.push('D');
+    }
+    if (checkIfLeftIsOpen()) {
+      openPaths.push('L');
+    }
+    if (checkIfUpIsOpen()) {
+      openPaths.push('U');
+    }
+
+    return openPaths;
+  }
+
+  // check all paths for used at once
+  const checkAllPathsForUsed = () => {
+    const usedPaths = [];
+
+    if (checkIfRightIsUsed()) {
+      usedPaths.push('R');
+    }
+    if (checkIfDownIsUsed()) {
+      usedPaths.push('D');
+    }
+    if (checkIfLeftIsUsed()) {
+      usedPaths.push('L');
+    }
+    if (checkIfUpIsUsed()) {
+      usedPaths.push('U');
+    }
+
+    return usedPaths;
+  }
+
+  const moveCurrentPosition = (movementDirection) => {
+    if (movementDirection === 'R') {
+      return getThroughMaze(column, nextRowRight);
+    } else if (movementDirection === 'D') {
+      return getThroughMaze(nextColumnDown, row);
+    } else if (movementDirection === 'L') {
+      return getThroughMaze(column, nextRowLeft);
+    } else if (movementDirection === 'U') {
+      return getThroughMaze(nextColumnUp, row);
+    }
+  }
+
+  if (onESpace) {
+    if (currentPathNum === totalPathNum) {
+      routes.pop();
+      console.log(routes);
+      return routes;
+    } else {
+      currentPathNum++;
+      routes[currentPathNum] = [];
+      getThroughMaze(0, 0);
+    }
+  }
+
+  if (onBlankSpace || onUsedSpace) {
+    const ePaths = checkAllPathsForE();
+
+    if (ePaths.length === 0) {
+      const blankPaths = checkAllPathsForOpen();
+
+      if (blankPaths.length === 0) {
+        const usedPaths = checkAllPathsForUsed();
+
+        if (usedPaths.length !== 0) {
+          routes[currentPathNum].push(usedPaths[0])
+          changeCurrentSpaceToOne();
+          moveCurrentPosition(usedPaths[0]);
+        }
+
+      } else if (blankPaths.length > 1) {
+        totalPathNum++;
+
+        routes[currentPathNum].push(blankPaths[0]);
+        changeCurrentSpaceToOne();
+        moveCurrentPosition(blankPaths[0]);
+      } else {
+        routes[currentPathNum].push(blankPaths[0]);
+        changeCurrentSpaceToOne();
+        moveCurrentPosition(blankPaths[0]);
+      }
+    } else {
+      routes[currentPathNum].push(ePaths[0]);
+      moveCurrentPosition(ePaths[0]);
+    }
   }
 }
+
+console.log('getThroughMaze(0, 0)', getThroughMaze(0, 0));
 
 
 // Problem 10 (ASK)
@@ -331,5 +430,12 @@ function representBinary(n) {
   return n.toString(2);
 }
 
-console.log(representBinary(0));
-console.log(representBinary(3))
+function turnBinary(num){
+  if(num >= 1) {
+    return turnBinary(Math.floor(num/2))+(num % 2);
+  }
+  return '';
+}
+
+console.log(representBinary(100))
+console.log(turnBinary(100));
